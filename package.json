@@ -5,12 +5,18 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "npm run copy-files",
-    "copy-files": "mkdir -p libs/jquery-csv && cp node_modules/jquery-csv/src/jquery.csv.min.js libs/jquery-csv/"
+    "postinstall": "npm run copy-files-jquery-csv ; npm run copy-files-jquery; npm run copy-files-bootstrap; npm run copy-files-leaflet",
+    "copy-files-jquery-csv": "mkdir -p libs/jquery-csv && cp node_modules/jquery-csv/src/jquery.csv.min.js libs/jquery-csv/",
+    "copy-files-jquery": "mkdir -p libs/jquery && cp node_modules/jquery/dist/jquery.min.* libs/jquery/",
+    "copy-files-bootstrap": "mkdir -p libs/bootstrap && cp -r node_modules/bootstrap/dist/* libs/bootstrap/",
+    "copy-files-leaflet": "mkdir -p libs/leaflet && cp -r node_modules/leaflet/dist/* libs/leaflet/"
   },
   "author": "",
   "license": "BSD-3-Clause",
   "dependencies": {
-    "jquery-csv": "^1.0.21"
+    "bootstrap": "^5.3.1",
+    "jquery": "^3.7.0",
+    "jquery-csv": "^1.0.21",
+    "leaflet": "^1.9.4"
   }
 }
