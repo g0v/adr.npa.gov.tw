@@ -1,0 +1,16 @@
+{
+  "name": "adr",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "npm run copy-files",
+    "copy-files": "mkdir -p libs/jquery-csv && cp node_modules/jquery-csv/src/jquery.csv.min.js libs/jquery-csv/"
+  },
+  "author": "",
+  "license": "BSD-3-Clause",
+  "dependencies": {
+    "jquery-csv": "^1.0.21"
+  }
+}
