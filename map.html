@@ -1,0 +1,121 @@
+<html>
+<head>
+    <title>Map</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="libs/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="libs/leaflet/leaflet.css">
+    <script src="libs/jquery/jquery.min.js"></script>
+    <script src="libs/bootstrap/js/bootstrap.min.js"></script>
+    <script src="libs/leaflet/leaflet.js"></script>
+    <script src="libs/jquery-csv/jquery.csv.min.js"></script>
+    <style>
+        html, body, .container {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        .menu {
+            float: left;
+            width: 30%;
+            height: 100%;
+            background-color: #eee;
+        }
+        .map {
+            float: left;
+            width: 70%;
+            height: 100%;
+        }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="menu">
+        <h1></h1>
+        <ul class="list-group" id="folder-list">
+        </ul>
+    </div>
+    <div class="map">
+        <div id="map" style="width: 100%; height: 100%;"></div>
+    </div>
+</div>
+
+<script>
+var map = L.map('map', {
+        preferCanvas: true
+        }).setView([25.0335, 121.5651], 13);
+L.tileLayer.wms('https://wmts.nlsc.gov.tw/wmts/EMAP5/default/EPSG:3857/{z}/{y}/{x}', {
+    crs: L.CRS.EPSG3857,
+    attribution: '&copy; <a href="https://maps.nlsc.gov.tw/">國土測繪中心</a> contributors',
+}).addTo(map);
+
+var mid = document.location.search.split('=')[1];
+$('ul').on('change', '.folder-check', function(){
+        var li_dom = $(this).closest('li');
+        var group = li_dom.data('group');
+        if ($(this).prop('checked')) {
+            map.addLayer(group);
+        } else {
+            map.removeLayer(group);
+        }
+});
+
+$.get('data/list.csv', function(c){
+        var data = $.csv.toObjects(c);
+        var name = null;
+        $.each(data, function(i, v){
+                if (v.mid == mid) {
+                    name = v.name;
+                    $('h1').text(name);
+                    return;
+                }
+        });
+        if (null === name) {
+            return;
+        }
+        $.get('data/' + mid + '.csv', function(c){
+                var data = $.csv.toObjects(c);
+                var folders = {};
+                var folder_markers = {};
+                var all_markers = [];
+                $.each(data, function(i, v){
+                        if ('' === (v['緯度']) || '' === (v['經度'])) {
+                            return;
+                        }
+
+                        var foldername = v['foldername'];
+                        if (undefined === folders[foldername]) {
+                            folder_markers[foldername] = [];
+
+                            var li_dom = $('<li class="list-group-item"></li>');
+                            li_dom.data('count', 1);
+                            li_dom.append($('<input type="checkbox" class="form-check-input me-1 folder-check" checked>'));
+                            li_dom.append($('<span></span>').text(foldername));
+                            li_dom.append($('<span class="badge bg-primary rounded-pill ms-1">1</span>'));
+                            folders[foldername] = li_dom;
+                            $('ul').append(li_dom);
+                        } else {
+                            li_dom = folders[foldername];
+                            li_dom.data('count', li_dom.data('count') + 1);
+                            li_dom.find('.badge').text(li_dom.data('count'));
+                        }
+                        
+                        v.lat = parseFloat(v['緯度']);
+                        v.lng = parseFloat(v['經度']);
+                        if (v.lat > 50) return;
+                        var marker = L.circleMarker([v.lat, v.lng]).addTo(map);
+                        marker.bindPopup(v.placename);
+                        folder_markers[foldername].push(marker);
+                        all_markers.push(marker);
+                });
+                for (var foldername in folder_markers) {
+                    var markers = folder_markers[foldername];
+                    var group = new L.featureGroup(markers);
+                    folders[foldername].data('group', group);
+                }
+                var group = new L.featureGroup(all_markers);
+                map.fitBounds(group.getBounds());
+        });
+});
+</script>
+</body>
+</html>

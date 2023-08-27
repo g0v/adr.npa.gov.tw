@@ -1,0 +1,23 @@
+<script src="libs/jquery/jquery.min.js"></script>
+<script src="libs/jquery-csv/jquery.csv.min.js"></script>
+<table class="table">
+    <thead>
+        <tr>
+            <th>name</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+<script>
+$.get('data/list.csv', function(c){
+        var data = $.csv.toObjects(c);
+        $('tbody').html('');
+        $.each(data, function(i, v){
+            var a_dom = $('<a>').attr('href', 'map.html?id=' + v.mid).text(v.name);
+            var td_dom = $('<td>').append(a_dom);
+            var tr_dom = $('<tr>').append(td_dom);
+            $('tbody').append(tr_dom);
+        });
+});
+</script>
