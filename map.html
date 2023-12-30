@@ -103,7 +103,17 @@ $.get('data/list.csv', function(c){
                         v.lng = parseFloat(v['經度']);
                         if (v.lat > 50) return;
                         var marker = L.circleMarker([v.lat, v.lng]).addTo(map);
-                        marker.bindPopup(v.placename);
+                        marker.bindPopup(`
+                                        <b>編號:</b> ${v.電腦編號}<br>
+                                        <b>類別:</b> ${v.placename}<br>
+                                        <b>里別:</b> ${v.村里別}<br>
+                                        <b>地址:</b> ${v.地址}<br>
+                                        <b>避難所在之地下樓層數:</b> ${v.地下樓層數}<br>
+                                        <b>可容納人數:</b> ${v.可容納人數}<br>
+                                        <b>轄區分局:</b> ${v.轄管分局}<br>
+                                        <b>經度:</b> ${v.經度}<br>
+                                        <b>緯度:</b> ${v.緯度}<br>
+                                    `);
                         folder_markers[foldername].push(marker);
                         all_markers.push(marker);
                 });
